@@ -1,6 +1,7 @@
 import Axios from "axios";
 import { useState } from "react";
 import "./App.css";
+import RecipeTile from "./RecipeTile";
 
 function App() {
   const [query, setQuery] = useState("");
@@ -12,20 +13,29 @@ function App() {
 
   async function getRecipes() {
     var result = await Axios.get(url);
+    setRecipes(result.data.hits);
     console.log(result.data);
   }
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    getRecipes();
+  };
 
   return (
     <div className="app">
       <h1>Food Recipe App</h1>
-      <form className="app__searchForm">
+      <form className="app__searchForm" onSubmit={onSubmit}>
         <input
           type="text"
-          value={query}
           className="app__input"
           placeholder="enter ingredient"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
         />
-        <button className="app__submit">Submit</button>
+        <button className="app__submit" type="submit">
+          Search
+        </button>
         <select className="app__healthLabels">
           <option value="vegan" onClick={() => setHealthLabel("vegan")}>
             vegan
@@ -83,6 +93,11 @@ function App() {
           </option>
         </select>
       </form>
+      <div className="app__recipes">
+        {recipes.map((recipe) => {
+          return <RecipeTile recipe={recipe} />;
+        })}
+      </div>
     </div>
   );
 }
